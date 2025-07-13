@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { lastValueFrom } from 'rxjs';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -14,37 +15,27 @@ export class AppComponent {
   title = 'stravatitan';
   isAuthenticated: any;
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private authService: AuthService
+  ) {}
 
-  ngOnInit() {
-    console.log('We are in the ngoninit');
-  }
+  async ngOnInit() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
 
-  async createCookie() {
-    try {
-      const response: any = await lastValueFrom(
-        this.http.get('http://localhost:5000/api/create-session', {
-          withCredentials: true,
-        })
-      );
-
-      console.log(response.message);
-    } catch (error) {
-      console.error('Auth check failed:', error);
+    if (code) {
+      await this.authService.handleOAuthCallback(code);
+      window.history.replaceState({}, document.title, '/');
     }
-  }
 
-  async checkCookie() {
-    try {
-      const response: any = await lastValueFrom(
-        this.http.get('http://localhost:5000/api/test-session-check', {
-          withCredentials: true,
-        })
-      );
+    const isAuthenticated = await this.authService.isUserAuthenticated();
 
-      console.log(response.message);
-    } catch (error) {
-      console.error('Auth check failed:', error);
+    if (isAuthenticated) {
+      this.router.navigate(['/maindashboard']);
+    } else {
+      this.router.navigate(['/login']);
     }
   }
 }

@@ -11,7 +11,7 @@ export class LoginComponent {
   triggerOAuth() {
     const params = new URLSearchParams({
       client_id: '122292',
-      redirect_uri: 'http://localhost:4200/maindashboard',
+      redirect_uri: 'http://localhost:4200/',
       response_type: 'code',
       scope: 'read_all,activity:read_all',
       approval_prompt: 'force',
