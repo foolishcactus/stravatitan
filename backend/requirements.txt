@@ -1,0 +1,8 @@
+flask
+flask_sqlalchemy
+flask_migrate
+flask_cors
+sqlalchemy
+requests
+psycopg2-binary
+python-dotenv

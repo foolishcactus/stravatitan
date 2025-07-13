@@ -1,0 +1,26 @@
+services:
+  database: #An arbitrary name for the PostgreSQL container. Could have been anyname
+    image: postgres  # Remove line break, put on same line
+    environment:
+      POSTGRES_USER: ${DB_USER}  # Remove line breaks, put on same line
+      POSTGRES_PASSWORD: ${DB_PASSWORD}  # Remove line breaks, put on same line
+      POSTGRES_DB: strava_titan #Actual name of the database created within PostgreSQL
+    ports: 
+      - "5432:5432"  # Add dash and space, fix quotes
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data #location where the data is stored
+
+  #backend:
+  #  build: ./backend
+  #  environment:
+  #    - STRAVA_CLIENT_ID=${STRAVA_CLIENT_ID}
+  #    - STRAVA_CLIENT_SECRET=${STRAVA_CLIENT_SECRET}
+  #    - DATABASE_URL=${DATABASE_URL}
+  #    - FLASK_ENV=development
+  #  ports:
+  #    - "5000:5000"
+  #  volumes:
+  #    - ./backend:/app  # For development hot reloading
+  #  depends_on:
+  #    - db
+  

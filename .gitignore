@@ -1,0 +1,117 @@
+Here's a comprehensive .gitignore file that combines the Angular defaults with your Flask/PostgreSQL needs:
+gitignore# See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
+
+# Compiled output
+/dist
+/tmp
+/out-tsc
+/bazel-out
+
+# Node
+/node_modules
+node_modules/
+**/node_modules/
+npm-debug.log
+yarn-error.log
+
+# IDEs and editors
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/*
+
+# Miscellaneous
+/.angular/cache
+.sass-cache/
+/connect.lock
+/coverage
+/libpeerconnection.log
+testem.log
+/typings
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.*
+.env.local
+.env.development
+.env.production
+
+# Code formatting
+.prettierignore
+
+# Python/Flask backend
+backend/venv/
+backend/__pycache__/
+backend/*.pyc
+backend/*.pyo
+backend/*.pyd
+backend/*.py[cod]
+backend/instance/
+backend/.webassets-cache
+
+# PostgreSQL data
+postgres_data/
+pgdata/
+
+# Python general
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+*.sql
+*.dump
+
+# Logs
+*.log
+logs/
+
+# Docker (if you want to ignore any generated files)
+.dockerignore
+
+# Virtual environments (additional patterns)
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+
+# Flask specific
+instance/
+.webassets-cache
