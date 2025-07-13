@@ -1,5 +1,8 @@
-Here's a comprehensive .gitignore file that combines the Angular defaults with your Flask/PostgreSQL needs:
-gitignore# See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
+# See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
+
+# ================================
+# ANGULAR FRONTEND
+# ================================
 
 # Compiled output
 /dist
@@ -9,66 +12,44 @@ gitignore# See https://docs.github.com/get-started/getting-started-with-git/igno
 
 # Node
 /node_modules
-node_modules/
-**/node_modules/
 npm-debug.log
 yarn-error.log
 
-# IDEs and editors
-.idea/
-.project
-.classpath
-.c9/
-*.launch
-.settings/
-*.sublime-workspace
+# Angular specific
+.angular/
+frontend/stravatitan/.angular/
+frontend/stravatitan/dist/
+frontend/stravatitan/tmp/
+frontend/stravatitan/out-tsc/
+frontend/stravatitan/node_modules/
 
-# Visual Studio Code
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-.history/*
+# Build artifacts
+*.tsbuildinfo
 
-# Miscellaneous
-/.angular/cache
-.sass-cache/
-/connect.lock
-/coverage
-/libpeerconnection.log
-testem.log
-/typings
+# Coverage reports
+coverage/
+*.lcov
 
-# System files
-.DS_Store
-Thumbs.db
+# Dependency directories
+jspm_packages/
 
-# Environment files
-.env
-.env.*
-.env.local
-.env.development
-.env.production
+# Optional npm cache directory
+.npm
 
-# Code formatting
-.prettierignore
+# Optional eslint cache
+.eslintcache
 
-# Python/Flask backend
-backend/venv/
-backend/__pycache__/
-backend/*.pyc
-backend/*.pyo
-backend/*.pyd
-backend/*.py[cod]
-backend/instance/
-backend/.webassets-cache
+# Output of 'npm pack'
+*.tgz
 
-# PostgreSQL data
-postgres_data/
-pgdata/
+# Yarn Integrity file
+.yarn-integrity
 
-# Python general
+# ================================
+# PYTHON/FLASK BACKEND
+# ================================
+
+# Python cache
 __pycache__/
 *.py[cod]
 *$py.class
@@ -90,21 +71,17 @@ wheels/
 .installed.cfg
 *.egg
 
-# Database files
-*.db
-*.sqlite
-*.sqlite3
-*.sql
-*.dump
+# Backend specific
+backend/__pycache__/
+backend/**/__pycache__/
+backend/**/*.pyc
+backend/**/*.pyo
+backend/**/*.pyd
 
-# Logs
-*.log
-logs/
-
-# Docker (if you want to ignore any generated files)
-.dockerignore
-
-# Virtual environments (additional patterns)
+# Virtual environments
+backend/venv/
+backend/env/
+backend/.venv/
 venv/
 env/
 ENV/
@@ -113,5 +90,125 @@ venv.bak/
 .venv/
 
 # Flask specific
+backend/instance/
 instance/
 .webassets-cache
+backend/.webassets-cache
+
+# Pytest cache
+backend/.pytest_cache/
+.pytest_cache/
+
+# Coverage reports
+backend/htmlcov/
+backend/.coverage
+backend/.coverage.*
+backend/coverage.xml
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+
+# ================================
+# DATABASE
+# ================================
+
+# PostgreSQL data
+postgres_data/
+pgdata/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+*.sql
+*.dump
+
+# ================================
+# ENVIRONMENT & CONFIGURATION
+# ================================
+
+# Environment files
+.env
+.env.*
+.env.local
+.env.development
+.env.production
+backend/.env
+backend/.env.*
+
+# Configuration files with secrets
+config/secrets.py
+config/production.py
+
+# ================================
+# IDE & EDITORS
+# ================================
+
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/*
+backend/.vscode/
+frontend/.vscode/
+
+# IDEs and editors
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# ================================
+# MISCELLANEOUS
+# ================================
+
+# Angular cache
+/.angular/cache
+.sass-cache/
+/connect.lock
+/coverage
+/libpeerconnection.log
+testem.log
+/typings
+
+# Code formatting
+.prettierignore
+
+# Logs
+*.log
+logs/
+backend/*.log
+backend/logs/
+
+# System files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Security files
+*.pem
+*.key
+*.crt
+id_rsa
+id_rsa.pub
+*.ppk
+
+# Temporary folders
+tmp/
+temp/
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
