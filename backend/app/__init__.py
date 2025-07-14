@@ -3,10 +3,13 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_cors import CORS
 from datetime import timedelta
+from dotenv import load_dotenv
+import os
 
 #Initalizes the each instance within the databse with a Base Class. Creates common timestamp fields and methods. Part of DRY (Don't repeat yourself) principle 
 db = SQLAlchemy()
 migrate = Migrate()
+load_dotenv()
 
 def create_app():
     app = Flask(__name__)
@@ -14,14 +17,14 @@ def create_app():
     app.secret_key = 'test-key'
 # Configure CORS
     CORS(app, 
-     origins=['http://localhost:4200'],  # Your Angular URL
+     origins=[os.getenv('FRONTEND_URL')],  # Your Angular URL
      supports_credentials=True,
     )
 
     app.config.from_mapping(
         SECRET_KEY = 'dev',
         #SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URL'],
-        SQLALCHEMY_DATABASE_URI='postgresql://myuser:dbpassword@localhost:5432/strava_titan',
+        SQLALCHEMY_DATABASE_URI=os.getenv('DB_URL'),
         SQLALCHEMY_TRACK_MODIFICATIONS=False
     )
 

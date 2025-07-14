@@ -5,6 +5,7 @@ from app import db
 from typing import Optional, Any
 from dataclasses import dataclass, asdict
 from datetime import datetime
+import os
 
 from app.models import User
 from .services.strava_service import StravaService
@@ -22,7 +23,7 @@ class titan_api_res:
 ####################################################################################  
 # First step to handling the OAuth Flow. We must handle the exchange token that we receive
 @api_bp.route('/handle-strava-exchange-code', methods=['POST']) 
-@cross_origin(origins=['http://localhost:4200'], supports_credentials=True)
+@cross_origin(origins=[os.getenv('FRONTEND_URL')], supports_credentials=True)
 def handle_strava_exchange_code():
     try: 
         code = request.json.get('code')

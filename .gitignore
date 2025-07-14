@@ -22,6 +22,8 @@ frontend/stravatitan/dist/
 frontend/stravatitan/tmp/
 frontend/stravatitan/out-tsc/
 frontend/stravatitan/node_modules/
+frontend/stravatitan/src/environments/environment.ts
+frontend/stravatitan/src/environments/environment.prod.ts
 
 # Build artifacts
 *.tsbuildinfo
@@ -180,12 +182,6 @@ testem.log
 # Code formatting
 .prettierignore
 
-# Logs
-*.log
-logs/
-backend/*.log
-backend/logs/
-
 # System files
 .DS_Store
 .DS_Store?
@@ -194,14 +190,6 @@ backend/logs/
 .Trashes
 ehthumbs.db
 Thumbs.db
-
-# Security files
-*.pem
-*.key
-*.crt
-id_rsa
-id_rsa.pub
-*.ppk
 
 # Temporary folders
 tmp/

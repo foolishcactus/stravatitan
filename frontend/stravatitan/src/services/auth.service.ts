@@ -2,17 +2,22 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { lastValueFrom } from 'rxjs';
 import { TitanAPIRes } from '../interfaces/titan-apires';
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  constructor(private http: HttpClient) {}
+  private apiUrl: string;
+
+  constructor(private http: HttpClient) {
+    this.apiUrl = environment.apiUrl;
+  }
 
   async isUserAuthenticated() {
     try {
       const response: TitanAPIRes = await lastValueFrom(
-        this.http.get<TitanAPIRes>('http://localhost:5000/api/auth/status', {
+        this.http.get<TitanAPIRes>(`${this.apiUrl}/api/auth/status`, {
           withCredentials: true,
         })
       );
@@ -34,12 +39,12 @@ export class AuthService {
     try {
       const response: TitanAPIRes = await lastValueFrom(
         this.http.post<TitanAPIRes>(
-          'http://localhost:5000/api/handle-strava-exchange-code',
+          `${this.apiUrl}/api/handle-strava-exchange-code`,
           { code: exchangeCode },
           {
             withCredentials: true,
             headers: {
-              'Content-Type': 'application/json', // Add this
+              'Content-Type': 'application/json',
             },
           }
         )

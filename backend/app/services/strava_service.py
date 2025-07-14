@@ -3,20 +3,18 @@
 #2. Taking the data from Strava and saving it to our datbase
 ####################################################################################  
 import requests
+import os
 from datetime import datetime
-from app.models import StravaActivity, User
+from app.models import User
 from app import db
 from flask import session
 
 class StravaService:
 
     def __init__(self, access_token = None):
-        #Don't know if we should make the client secret, and client id, environment variables???
-        #self.client_id = os.getenv('STRAVA_CLIENT_ID')
-        #self.client_secret = os.getenv('STRAVA_CLIENT_SECRET')
 
-        self.client_id = "122292"
-        self.client_secret = "03545051c823732cb8168a43d4ab8ae57b59e1f8"
+        self.client_id = os.getenv('STRAVA_CLIENT_ID')
+        self.client_secret = os.getenv('STRAVA_CLIENT_SECRET')
         self.base_url = "https://www.strava.com/api/v3" 
         self.access_token = access_token
 

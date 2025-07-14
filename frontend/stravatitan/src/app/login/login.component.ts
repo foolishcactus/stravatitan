@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-login',
@@ -10,8 +11,8 @@ import { Component } from '@angular/core';
 export class LoginComponent {
   triggerOAuth() {
     const params = new URLSearchParams({
-      client_id: '122292',
-      redirect_uri: 'http://localhost:4200/',
+      client_id: environment.stravaClientId,
+      redirect_uri: environment.redirectUri,
       response_type: 'code',
       scope: 'read_all,activity:read_all',
       approval_prompt: 'force',
