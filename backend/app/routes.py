@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request, session
 from flask_cors import cross_origin
+from sqlalchemy import text
 
 from app import db
 from typing import Optional, Any
@@ -119,6 +120,15 @@ def add_user_to_db(refresh_token: str, expires_at: datetime, access_token: str, 
 def get_all_users():
     users = User.query.all()
     return jsonify([user.to_dict() for user in users])
+
+@api_bp.route('/db/health', methods =['GET'] )
+def db_health():
+    try:
+        # Simple query to test connection
+        db.session.execute(text('SELECT 1'))
+        return {'status': 'healthy', 'database': 'connected'}, 200
+    except Exception as e:
+        return {'status': 'unhealthy', 'error': str(e)}, 500
 ####################################################################################
 
 @api_bp.route('/auth/status', methods=['GET'])

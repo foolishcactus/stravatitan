@@ -23,7 +23,6 @@ def create_app():
 
     app.config.from_mapping(
         SECRET_KEY = 'dev',
-        #SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URL'],
         SQLALCHEMY_DATABASE_URI=os.getenv('DB_URL'),
         SQLALCHEMY_TRACK_MODIFICATIONS=False
     )

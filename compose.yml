@@ -1,26 +1,43 @@
 services:
-  database: #An arbitrary name for the PostgreSQL container. Could have been anyname
-    image: postgres  # Remove line break, put on same line
+  database:
+    image: postgres:15
     environment:
-      POSTGRES_USER: ${DB_USER}  # Remove line breaks, put on same line
-      POSTGRES_PASSWORD: ${DB_PASSWORD}  # Remove line breaks, put on same line
-      POSTGRES_DB: strava_titan #Actual name of the database created within PostgreSQL
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: strava_titan
     ports: 
-      - "5432:5432"  # Add dash and space, fix quotes
+      - "5432:5432"
     volumes:
-      - ./postgres_data:/var/lib/postgresql/data #location where the data is stored
+      - ./postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d strava_titan"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
-  #backend:
-  #  build: ./backend
-  #  environment:
-  #    - STRAVA_CLIENT_ID=${STRAVA_CLIENT_ID}
-  #    - STRAVA_CLIENT_SECRET=${STRAVA_CLIENT_SECRET}
-  #    - DATABASE_URL=${DATABASE_URL}
-  #    - FLASK_ENV=development
-  #  ports:
-  #    - "5000:5000"
-  #  volumes:
-  #    - ./backend:/app  # For development hot reloading
-  #  depends_on:
-  #    - db
-  
+  backend:
+    build: ./backend
+    environment:
+      - STRAVA_CLIENT_ID=${STRAVA_CLIENT_ID}
+      - STRAVA_CLIENT_SECRET=${STRAVA_CLIENT_SECRET}
+      - DB_URL=postgresql://${DB_USER}:${DB_PASSWORD}@database:5432/strava_titan
+      - FRONTEND_URL=${FRONTEND_URL}
+      - BACKEND_URL=${BACKEND_URL}
+      - FLASK_ENV=development
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend:/app
+    depends_on:
+      database:
+        condition: service_healthy
+
+  frontend:
+    build: ./frontend/stravatitan
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./frontend/stravatitan:/app
+      - /app/node_modules
+    depends_on:
+      - backend

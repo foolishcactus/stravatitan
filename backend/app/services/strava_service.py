@@ -40,7 +40,7 @@ class StravaService:
             raise Exception(f"Exchange Code for Access Token Failed: {response.status_code}")
         
     def print_session_id(self):
-        print(f"This is the value of the session id: {session["user_strava_id"]}")  
+        print(f"This is the value of the session id: {session['user_strava_id']}")  
 ####################################################################################  
     def fetch_user_from_strava(self):
 
