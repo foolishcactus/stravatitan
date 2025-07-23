@@ -8,10 +8,8 @@ from dataclasses import dataclass, asdict
 from datetime import datetime
 import os
 
-from app.models import User
-from .services.strava_service import StravaService
-
-
+from .services import db_service as DBService
+from .services import strava_service as StravaService
 
 api_bp = Blueprint('api', __name__)
 
@@ -36,10 +34,9 @@ def handle_strava_exchange_code():
                 )
                 return jsonify(asdict(response)), 400
         
-        strava_service = StravaService()
-        token_info = strava_service.exchange_code_for_access_token(code)
+        token_info = StravaService.exchange_code_for_access_token(code)
 
-        user = add_user_to_db(token_info['refresh_token'], datetime.fromtimestamp(token_info['expires_at']), token_info['access_token'], token_info['athlete'])
+        user = DBService.add_user_to_db(token_info['refresh_token'], datetime.fromtimestamp(token_info['expires_at']), token_info['access_token'], token_info['athlete'])
 
         if user:
             session['athlete_id'] = token_info['athlete']['id']
@@ -74,52 +71,8 @@ def handle_strava_exchange_code():
             }
         )
         return jsonify(asdict(response)), 500
-    
-def add_user_to_db(refresh_token: str, expires_at: datetime, access_token: str, athlete_data) -> bool:
-    try:
-        
-        strava_id = athlete_data['id']
-
-        existing_user = User.query.filter_by(strava_id=strava_id).first()
-
-        if existing_user:
-            print(f"We have an existing user")
-            existing_user.access_token = access_token
-            existing_user.refresh_token = refresh_token
-            existing_user.fist_name = athlete_data['firstname']
-            existing_user.last_name = athlete_data['lastname']
-            existing_user.username = athlete_data['username']
-            existing_user.profile_picture = athlete_data['profile']
-
-            db.session.commit()
-
-            return existing_user
-        else:
-            user = User(
-            username = athlete_data['username'],
-            first_name = athlete_data['firstname'],
-            last_name = athlete_data['lastname'],
-            strava_id = athlete_data['id'],
-            access_token = access_token,
-            refresh_token = refresh_token,
-            token_expires_at = expires_at,
-            profile_picture = athlete_data['profile']
-            )
-
-            db.session.add(user)
-            db.session.commit()
-            return user
-
-    except Exception as e:
-        db.session.rollback()
-        print(f"Error adding user: {e}")
-        return None
 
 ####################################################################################  
-@api_bp.route('/get-all-users', methods=['GET'])
-def get_all_users():
-    users = User.query.all()
-    return jsonify([user.to_dict() for user in users])
 
 @api_bp.route('/db/health', methods =['GET'] )
 def db_health():
@@ -129,9 +82,17 @@ def db_health():
         return {'status': 'healthy', 'database': 'connected'}, 200
     except Exception as e:
         return {'status': 'unhealthy', 'error': str(e)}, 500
+    
+@api_bp.route('/db/all-users', methods =['GET'] )
+def all_users():
+    print("We are getting called")
+    users = DBService.getAllUsers()
+    return jsonify([user.to_dict() for user in users])
+    
 ####################################################################################
 
 @api_bp.route('/auth/status', methods=['GET'])
+
 def auth_status():
     #print(f"=========================================")
     #print(f"Received cookies: {dict(request.cookies)}")
@@ -140,13 +101,44 @@ def auth_status():
     athlete_strava_id = session.get('athlete_id')
 
     if athlete_strava_id:
-        response = titan_api_res(
-            message = "Cookie for user exists",
-            success = True,
-            data = {
+        tokenInfo = DBService.is_access_token_expired()
+        refreshToken: str = tokenInfo[0]
+        isTokenExpired: bool = tokenInfo[1]
+        
+
+        #Creating
+        if isTokenExpired:
+            #Returns the following tuple [access_token: str, expires_at: datetime, refresh_token:str]
+            new_tokens = StravaService.refresh_access_token(refreshToken)
+
+            print(f"These are the new tokens: {new_tokens}")
+            if new_tokens is None:
+                response = titan_api_res(
+                    message="Error with the Strava API when trying to refresh tokens",
+                    success=False,
+                )
+            
+            response_from_db = DBService.update_user_tokens(new_tokens[0], new_tokens[1], new_tokens[2])
+            print(f"This is the response from the DB: {response_from_db}")
+            if response_from_db is None:
+                response = titan_api_res(
+                    message="We got the tokens, but couldn't add to database",
+                    success= False
+                )   
+            else:
+                response = titan_api_res(
+                    message="We successfully refreshed tokens and Flask Session exists",
+                    success = True
+                )
+            
+        else:   
+            response = titan_api_res(
+                message = "Cookie for user exists and tokens are still fresh",
+                success = True,
+                data = {
                 'athlete_strava_id': athlete_strava_id
-            }
-        )
+                }
+            )
     else:
         response = titan_api_res(
             message = "Cookie for user doesn't exist. Needs to re authenticate.",

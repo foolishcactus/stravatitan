@@ -9,7 +9,6 @@ Strava Titan is a Full Stack Application using Angular, Flask, and PostgreSQL bu
 - **Running Statistics** - Detailed analysis of your running activities
 - **Fully Containerized** - Easy setup and deployment with Docker
 - **Real-time Data** - Pull your latest activities from Strava
-- **Responsive Design** - Works on desktop and mobile devices
 
 ## Requirements
 
@@ -18,7 +17,6 @@ To clone this project all you will need is Docker installed and your Strava App 
 ## Clone
 
 git clone https://github.com/foolishcactus/stravatitan.git
-cd stravatitan
 
 ## Setup
 
@@ -55,9 +53,9 @@ Once running, navigate to:
 ## Tech Stack
 
 - **Frontend:** Angular 17
-- **Backend:** Flask (Python)
+- **Backend:** Flask
 - **Database:** PostgreSQL
-- **Containerization:** Docker & Docker Compose
+- **Containerization:** Docker
 
 ## Contributing
 
