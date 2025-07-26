@@ -73,8 +73,8 @@ def handle_strava_exchange_code():
         return jsonify(asdict(response)), 500
 
 ####################################################################################  
-
 @api_bp.route('/db/health', methods =['GET'] )
+@cross_origin(origins=[os.getenv('FRONTEND_URL')], supports_credentials=True)
 def db_health():
     try:
         # Simple query to test connection
@@ -90,9 +90,8 @@ def all_users():
     return jsonify([user.to_dict() for user in users])
     
 ####################################################################################
-
 @api_bp.route('/auth/status', methods=['GET'])
-
+@cross_origin(origins=[os.getenv('FRONTEND_URL')], supports_credentials=True)
 def auth_status():
     #print(f"=========================================")
     #print(f"Received cookies: {dict(request.cookies)}")
@@ -129,8 +128,7 @@ def auth_status():
                 response = titan_api_res(
                     message="We successfully refreshed tokens and Flask Session exists",
                     success = True
-                )
-            
+                )   
         else:   
             response = titan_api_res(
                 message = "Cookie for user exists and tokens are still fresh",
@@ -145,4 +143,21 @@ def auth_status():
             success = False,
         )
     
+    return jsonify(asdict(response)), 200 if response.success else 400
+
+####################################################################################
+@api_bp.route('/auth/logout')
+@cross_origin(origins=[os.getenv('FRONTEND_URL')], supports_credentials=True)
+def logout():
+    try:
+
+        session.clear()
+        response = titan_api_res(
+            message= "Successfully logged out",
+            success = True,
+        )
+    except Exception as e:
+        response = titan_api_res(
+            message = "Couldn't log out"
+        )
     return jsonify(asdict(response)), 200 if response.success else 400

@@ -14,7 +14,7 @@ export class AuthService {
     this.apiUrl = environment.apiUrl;
   }
 
-  async isUserAuthenticated() {
+  async isUserAuthenticated():Promise<boolean> {
     try {
       const response: TitanAPIRes = await lastValueFrom(
         this.http.get<TitanAPIRes>(`${this.apiUrl}/api/auth/status`, {
@@ -58,6 +58,23 @@ export class AuthService {
       }
     } catch (error) {
       console.error('Error connecting Strava account:', error);
+    }
+  }
+
+  async logout(): Promise<boolean>{
+    try{
+      const response: TitanAPIRes = await lastValueFrom(this.http.get<TitanAPIRes>(`${this.apiUrl}/api/auth/logout`, {
+        withCredentials: true, 
+      }))
+
+      if (response.success){
+        return true;
+      }else{
+        return false;
+      }
+    }catch(error){
+      console.error('Error logging out')
+      return false;
     }
   }
 }

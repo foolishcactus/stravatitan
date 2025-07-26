@@ -30,7 +30,7 @@ export class AppComponent {
       window.history.replaceState({}, document.title, '/');
     }
 
-    const isAuthenticated = await this.authService.isUserAuthenticated();
+    const isAuthenticated:boolean = await this.authService.isUserAuthenticated();
 
     if (isAuthenticated) {
       this.router.navigate(['/maindashboard']);
