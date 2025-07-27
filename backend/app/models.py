@@ -11,7 +11,7 @@ class User(db.Model):
     username: Mapped[str] = mapped_column(String(80))
     first_name: Mapped[str] = mapped_column(String(100))
     last_name: Mapped[str] = mapped_column(String(100))
-    strava_id: Mapped[Optional[int]] = mapped_column(BigInteger, unique=True)
+    strava_athlete_id: Mapped[Optional[int]] = mapped_column(BigInteger, unique=True)
     access_token: Mapped[str] = mapped_column(String(255), nullable = False)
     refresh_token: Mapped[str] = mapped_column(String(255), nullable = False)
     token_expires_at: Mapped[DateTime] = mapped_column(DateTime, default=func.now())
@@ -26,7 +26,7 @@ class User(db.Model):
     def to_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
     
-    def is_token_expired(self):
+    def is_token_expired(self) -> bool:
         if self.token_expires_at is None:
             return True
         
@@ -35,16 +35,16 @@ class User(db.Model):
 class StravaActivity(db.Model):
     __tablename__ = 'strava_activities'
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    strava_id: Mapped[int] = mapped_column(BigInteger, unique=True, nullable = False)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True) #Given by PostgreSQL database
+    strava_activity_id: Mapped[int] = mapped_column(BigInteger, unique=True, nullable = False) #Unique Strava ID for the activity (not the USER that enters it)
     
     name: Mapped[str] = mapped_column(String(255))
     activity_type: Mapped[str] = mapped_column(String(50))
     distance: Mapped[Optional[float]] = mapped_column(Float) #Meters
     elapsed_time: Mapped[int] = mapped_column(Integer) #Seconds
     description: Mapped[str] = mapped_column(String (255))
-    type: Mapped[Optional[str]] = mapped_column(String(50))
     start_date_local: Mapped[Optional[datetime]] = mapped_column(DateTime)
+    strava_athlete_id: Mapped[int] = mapped_column(Integer)
 
     created_at: Mapped[datetime] = mapped_column(DateTime, default=func.now(), nullable=False)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)

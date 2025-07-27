@@ -8,8 +8,10 @@ from dataclasses import dataclass, asdict
 from datetime import datetime
 import os
 
+
 from .services import db_service as DBService
 from .services import strava_service as StravaService
+from .models import User, StravaActivity
 
 api_bp = Blueprint('api', __name__)
 
@@ -100,7 +102,7 @@ def auth_status():
     athlete_strava_id = session.get('athlete_id')
 
     if athlete_strava_id:
-        tokenInfo = DBService.is_access_token_expired()
+        tokenInfo = DBService.is_access_token_expired(athlete_strava_id)
         refreshToken: str = tokenInfo[0]
         isTokenExpired: bool = tokenInfo[1]
         
@@ -161,3 +163,25 @@ def logout():
             message = "Couldn't log out"
         )
     return jsonify(asdict(response)), 200 if response.success else 400
+
+@api_bp.route('/get-runs', methods = ['GET'])
+@cross_origin(origins=[os.getenv('FRONTEND_URL')], supports_credentials=True)
+def get_all_runs():
+
+    try:
+        athlete_strava_id = session.get('athlete_id')
+        access_token  = DBService.get_access_token(athlete_strava_id)
+        all_strava_activities: list[dict] = StravaService.fetch_all_user_activities_from_strava(access_token)
+        strava_activity_objects: list[StravaActivity] = DBService.add_runs_to_database(all_strava_activities)
+
+        return jsonify({
+            "raw_activities": all_strava_activities,
+            "saved_activities": [activity.to_dict() for activity in strava_activity_objects]
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+
+
+   
+            

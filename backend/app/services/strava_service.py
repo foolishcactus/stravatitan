@@ -31,7 +31,8 @@ def exchange_code_for_access_token(code):
         return response.json()
     else:
         raise Exception(f"Exchange Code for Access Token Failed: {response.status_code}")
-
+    
+####################################################################################
 def refresh_access_token(refresh_token:str) -> tuple[str, datetime, str] | None:
     """Refresh expired access token"""
     token_url = 'https://www.strava.com/oauth/token'
@@ -74,7 +75,7 @@ def fetch_user_from_strava(access_token):
         raise Exception(f"Fetch User from Strava Failed: {response.status_code}")
 
 ####################################################################################
-def fetch_user_activities_from_strava_page(access_token, page: int):
+def fetch_user_activities_from_strava_page(access_token, page: int) -> list[dict]:
     """Fetch a single page of activities from Strava"""
     parameters = {
         "page": page
@@ -85,13 +86,15 @@ def fetch_user_activities_from_strava_page(access_token, page: int):
     response = requests.get(url, headers=headers, params=parameters)
 
     if response.status_code == 200:
+        print(f"We just got page {page} of the Strava Data")
         return response.json()
     else:
         print(f"Error response: {response.text}")
         raise Exception(f"Fetch User Activities from Strava Page Failed: {response.status_code}")
-
-def fetch_user_activities_from_strava(access_token):
+####################################################################################
+def fetch_all_user_activities_from_strava(access_token) -> list[dict]:
     """Fetch all activities from Strava (paginated)"""
+    print(f"We tried getting all the data from the API.")
     all_activities = []
     page_iterator = 1
     per_page = 30
@@ -109,6 +112,8 @@ def fetch_user_activities_from_strava(access_token):
             break
 
         page_iterator += 1
+
+        print(f"We finished getting all the data from the API.")
     
     return all_activities
 
