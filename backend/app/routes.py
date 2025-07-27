@@ -45,7 +45,7 @@ def handle_strava_exchange_code():
             session.permanent = True
             session.modified = True
 
-            #print(f"We are trying to create the session. Here is the session {session}")
+            print(f"We are trying to create the session. Here is the session {session}")
             
             response = titan_api_res(
                 message='Strava account connected successfully and added to local database',
@@ -104,11 +104,11 @@ def auth_status():
     if athlete_strava_id:
         tokenInfo = DBService.is_access_token_expired(athlete_strava_id)
         refreshToken: str = tokenInfo[0]
-        isTokenExpired: bool = tokenInfo[1]
+        isAccessTokenExpired: bool = tokenInfo[1]
         
 
-        #Creating
-        if isTokenExpired:
+        #If the access token is expired, but the Flask session is still active we automatically refresh it for the user here
+        if isAccessTokenExpired:
             #Returns the following tuple [access_token: str, expires_at: datetime, refresh_token:str]
             new_tokens = StravaService.refresh_access_token(refreshToken)
 
@@ -131,7 +131,7 @@ def auth_status():
                     message="We successfully refreshed tokens and Flask Session exists",
                     success = True
                 )   
-        else:   
+        else:
             response = titan_api_res(
                 message = "Cookie for user exists and tokens are still fresh",
                 success = True,
@@ -180,6 +180,28 @@ def get_all_runs():
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+@api_bp.route('/webhooks/strava', methods = ['GET', 'POST'])
+@cross_origin(supports_credentials= True)
+def handle_webhook():
+    local_verify_token = os.getenv('VERIFICATION_TOKEN')
+    try:
+        if request.method == 'GET':
+            mode = request.args.get('hub.mode')
+            verify_token = request.args.get('hub.verify_token')
+            challenge = request.args.get('hub.challenge')
+
+            if (mode == 'subscribe') and (verify_token == local_verify_token):
+                print(f"Webhook verified")
+                return jsonify({"hub.challenge": challenge}), 200
+            else:
+                return jsonify({"message" : "Verify Tokens do not match"}), 403   
+        elif request.method == 'POST':
+            event_data = request.json
+            print(f"Received webhook {event_data}")
+            return jsonify({"message" : "we received data"})
+    except Exception as e:
+        return jsonify({"message": "Ran into an error"}), 500
     
 
 
