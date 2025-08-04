@@ -1,0 +1,31 @@
+:host{
+    flex: 3;
+    height: 100%;
+}
+
+.chart-card{
+    height: 100%;
+}
+
+.table-search-filter{
+    display:flex;
+    display: row;
+    justify-content: space-between;
+}
+
+::ng-deep .borderless-table {
+    border: none !important;
+}
+
+::ng-deep .borderless-table .p-datatable-thead > tr > th,
+::ng-deep .borderless-table .p-datatable-tbody > tr > td {
+    border: none !important;
+    padding: 3vh 1vw;
+}
+
+.filter-range-labels{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 2vh 0vh 0vw 0vw;
+}

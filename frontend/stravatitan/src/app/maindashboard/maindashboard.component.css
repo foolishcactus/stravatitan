@@ -1,0 +1,82 @@
+:host {
+    height: 90%;
+    width: 95%;
+    display: flex;
+    flex-direction: row;
+    margin: 0;
+}
+
+.dashboard-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+    gap: 0.5rem;
+}
+
+.maindash {
+    flex: var(--main-flex, 4);
+    transition: flex 0.5s ease;
+}
+
+.dashboard-top-content {
+    display: flex;
+    flex-direction: row;
+    height: 40%;
+    gap: 1rem;
+}
+
+.dashboard-bottom-content{
+    display: flex;
+    flex-direction: row;
+    height: 60%;
+    gap: 1rem;
+}
+
+.controls-card {
+    flex: 1;
+    height: 100%;
+    border-radius:0;
+}
+
+.control-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.sidepane {
+    flex: var(--side-flex, 0);
+    transition: flex 0.5s ease;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.sidepane-content {
+    padding: 1rem;
+}
+
+/* When side panel is collapsed */
+.sidepane[style*="flex: 0"] {
+    min-width: 0;
+    width: 0;
+}
+
+.sidepane[style*="flex: 0"] .sidepane-content {
+    display: none;
+}
+
+::ng-deep .custom-height-panel .p-panel-header {
+    height: 5%;
+}
+
+::ng-deep .custom-height-panel .p-panel-content-container {
+    height: 95%;
+    display: flex;
+    flex-direction: column;
+}
+
+::ng-deep .custom-height-panel .p-panel-content {
+    height: 100%;
+    overflow: auto;
+}

@@ -1,0 +1,111 @@
+<p-table
+    #dt
+    [value]="stravaActivities"
+    selectionMode ="single"
+    [(selection)]="selectedActivity"
+    dataKey="id"
+    [rowHover]="true"
+    [globalFilterFields]="['name']"
+    styleClass="borderless-table"
+    [scrollable] = "true"
+    scrollHeight="flex"
+    (onRowSelect)="onRowSelect($event)"
+>
+    <ng-template #caption>
+        <div class="table-search-filter">
+            <p-iconField iconPosition="left">
+                <p-inputIcon>
+                    <i class="pi pi-search"></i>
+                </p-inputIcon>
+                <input pInputText type="text" [(ngModel)]="searchValue" (input)="dt.filterGlobal($event.target.value, 'contains')" placeholder="Search by name..." />
+            </p-iconField>
+            
+            <p-button [outlined]="true" icon="pi pi-filter-slash" label="Clear Filters" (click)="clear(dt)" />
+            
+        </div>
+    </ng-template>
+
+    <ng-template #header>
+        <tr>
+            <th pSortableColumn="name" style="width: 30%">
+                    Name
+                    <p-sortIcon field="name" />
+            </th>
+            <th pSortableColumn="distance" style="width: 25%">
+                <div>
+                    Distance
+                    <p-sortIcon field="distance" />
+                    <p-columnFilter field="distance" matchMode="between" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false">
+                        <ng-template #filter let-filter="filterCallback">
+                            <p-slider [(ngModel)]="distanceRange" [range]="true" [min]="0" [max]="50000" [step]="1000" (onSlideEnd)="filter($event.values)"></p-slider>
+                            <div class = "filter-range-labels">
+                                <span>{{ formatDistance(distanceRange[0]) }}</span>
+                                <span>{{ formatDistance(distanceRange[1]) }}</span>
+                            </div>
+                        </ng-template>
+                    </p-columnFilter>
+                </div>
+            </th>
+            <th pSortableColumn="elapsed_time" style="width: 15%">
+                <div>
+                    Elapsed Time
+                    <p-sortIcon field="elapsed_time" />
+                    <p-columnFilter field="elapsed_time" matchMode="between" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false" class="ml-auto">
+                        <ng-template #filter let-filter="filterCallback">
+                            <p-slider [(ngModel)]="durationRange" [range]="true" [min]="0" [max]="14400" [step]="300" (onSlideEnd)="filter($event.values)" class="m-4"></p-slider>
+                            <div class = "filter-range-labels">
+                                <span>{{ formatDuration(durationRange[0]) }}</span>
+                                <span>{{ formatDuration(durationRange[1]) }}</span>
+                            </div>
+                        </ng-template>
+                    </p-columnFilter>
+                </div>
+            </th>
+            <th pSortableColumn="pace_per_km" style="width: 15%">
+    <div class="flex justify-between items-center gap-2">
+        Pace
+        <p-sortIcon field="pace_per_km" />
+        <p-columnFilter field="pace_per_km" matchMode="between" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false" class="ml-auto">
+            <ng-template #filter let-filter="filterCallback">
+                <p-slider [(ngModel)]="paceRange" [range]="true" [min]="180" [max]="900" [step]="15" (onSlideEnd)="filter($event.values)" class="m-4"></p-slider>
+                <div class = "filter-range-labels">
+                    <span>{{ formatPaceFromSeconds(paceRange[0], 'km') }}</span>
+                    <span>{{ formatPaceFromSeconds(paceRange[1], 'km') }}</span>
+                </div>
+            </ng-template>
+        </p-columnFilter>
+    </div>
+</th>
+            <th pSortableColumn="start_date_local" style="width: 15%">
+                <div>
+                    Start Date
+                    <p-sortIcon field="start_date_local" />
+                    <p-columnFilter type="date" field="start_date_local" display="menu" />
+                </div>
+            </th>
+        </tr>
+    </ng-template>
+
+    <ng-template #body let-activity>
+        <tr [pSelectableRow]="activity">
+            <td>
+                <div>
+                    <i [class]="getActivityIcon(activity.activity_type)" class="text-primary"></i>
+                    <span>{{ activity.name }}</span>
+                </div>
+            </td>
+            <td>
+                <span>{{ formatDistance(activity.distance) }}</span>
+            </td>
+            <td>
+                <span>{{ formatElapsedTime(activity.elapsed_time) }}</span>
+            </td>
+            <td>
+                <span>{{ formatPaceFromSeconds(activity.pace_per_km, 'km') }}</span>
+            </td>
+            <td>
+                {{ activity.start_date_local | date: 'MMM d, y h:mm a' }}
+            </td>
+        </tr>
+    </ng-template>
+</p-table>

@@ -1,2 +1,51 @@
-<p>maindashboard works!</p>
-<button (click) = "handleLogoutClick()">Logout</button>
+<div class="dashboard-container">
+    <p-panel 
+             styleClass="custom-height-panel"
+             class="maindash" 
+             [style.flex]="mainFlex"
+             [toggleable]="false">
+        
+        <div class="dashboard-top-content">
+            <app-insights></app-insights>
+
+            <p-divider layout="vertical" styleClass="content-divider" />
+
+            <p-card styleClass="controls-card">
+                <p-selectbutton [options]="stateOptions" [(ngModel)]="value" optionLabel="label" optionValue="value" aria-labelledby="basic" />
+            </p-card>
+        </div>
+
+        <div class="dashboard-bottom-content">
+        
+                <app-myruns></app-myruns>
+
+            <p-divider layout="vertical" styleClass="content-divider" />
+
+            <p-card header="Controls" styleClass="controls-card">
+                <div class="control-buttons">
+                    <p-button label="Logout" 
+                             icon="pi pi-sign-out" 
+                             severity="secondary"
+                             (onClick)="handleLogoutClick()" />
+                    <p-button label="Toggle Dark Mode" 
+                             icon="pi pi-moon"
+                             severity="help"
+                             (onClick)="toggleDarkMode()" />
+                    <p-button [label]="panelToggleLabel" 
+                             icon="pi pi-bars"
+                             severity="primary"
+                             (onClick)="togglePanel()" />
+                </div>
+            </p-card>
+        </div>
+    </p-panel>
+
+    <p-panel 
+             class="sidepane" 
+             [style.flex]="sideFlex">
+        
+        <div class="sidepane-content">
+            <p>Side panel content goes here</p>
+        </div>
+    </p-panel>
+</div>
