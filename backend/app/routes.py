@@ -21,8 +21,11 @@ class titan_api_res:
     success: bool
     data: Optional[dict[str, Any]] = None
 
-####################################################################################  
+####################################################################################
+#AUTH ENDPOINTS
+#  
 # First step to handling the OAuth Flow. We must handle the exchange token that we receive
+####################################################################################
 @api_bp.route('/handle-strava-exchange-code', methods=['POST']) 
 @cross_origin(origins=[os.getenv('FRONTEND_URL')], supports_credentials=True)
 def handle_strava_exchange_code():
@@ -74,23 +77,6 @@ def handle_strava_exchange_code():
         )
         return jsonify(asdict(response)), 500
 
-####################################################################################  
-@api_bp.route('/db/health', methods =['GET'] )
-@cross_origin(origins=[os.getenv('FRONTEND_URL')], supports_credentials=True)
-def db_health():
-    try:
-        # Simple query to test connection
-        db.session.execute(text('SELECT 1'))
-        return {'status': 'healthy', 'database': 'connected'}, 200
-    except Exception as e:
-        return {'status': 'unhealthy', 'error': str(e)}, 500
-    
-@api_bp.route('/db/all-users', methods =['GET'] )
-def all_users():
-    print("We are getting called")
-    users = DBService.getAllUsers()
-    return jsonify([user.to_dict() for user in users])
-    
 ####################################################################################
 @api_bp.route('/auth/status', methods=['GET'])
 @cross_origin(origins=[os.getenv('FRONTEND_URL')], supports_credentials=True)
@@ -163,7 +149,49 @@ def logout():
             message = "Couldn't log out"
         )
     return jsonify(asdict(response)), 200 if response.success else 400
+####################################################################################
+#DB RELATED ENDPOINTS
+####################################################################################  
+@api_bp.route('/db/health', methods =['GET'] )
+@cross_origin(origins=[os.getenv('FRONTEND_URL')], supports_credentials=True)
+def db_health():
+    try:
+        # Simple query to test connection
+        db.session.execute(text('SELECT 1'))
+        return {'status': 'healthy', 'database': 'connected'}, 200
+    except Exception as e:
+        return {'status': 'unhealthy', 'error': str(e)}, 500
+    
+@api_bp.route('/db/all-users', methods =['GET'] )
+def all_users():
+    print("We are getting called")
+    users = DBService.getAllUsers()
+    return jsonify([user.to_dict() for user in users])
 
+####################################################################################
+@api_bp.route('/db/get-runs', methods = ['GET'])
+@cross_origin(origins=[os.getenv('FRONTEND_URL')], supports_credentials=True)
+def get_runs_from_db():
+    try:
+        athlete_strava_id = session.get('athlete_id')
+        runs = DBService.getAllRunsFromDB(athlete_strava_id)
+        runs_json = [run.to_dict() for run in runs]
+        response = titan_api_res(
+            message="Got all runs",
+            success=True,
+            data = runs_json,
+        )
+
+    except Exception as e:
+        response = titan_api_res(
+            message = "Couldn't log out"
+        )
+
+    return jsonify(asdict(response)), 200 if response.success else 400
+
+####################################################################################
+# Calls the Strava API and gets all runs and adds it to the local SQL database
+####################################################################################
 @api_bp.route('/get-runs', methods = ['GET'])
 @cross_origin(origins=[os.getenv('FRONTEND_URL')], supports_credentials=True)
 def get_all_runs():
@@ -180,7 +208,8 @@ def get_all_runs():
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    
+
+####################################################################################   
 @api_bp.route('/webhooks/strava', methods = ['GET', 'POST'])
 @cross_origin(supports_credentials= True)
 def handle_webhook():
@@ -201,9 +230,4 @@ def handle_webhook():
             print(f"Received webhook {event_data}")
             return jsonify({"message" : "we received data"})
     except Exception as e:
-        return jsonify({"message": "Ran into an error"}), 500
-    
-
-
-   
-            
+        return jsonify({"message": "Ran into an error"}), 500         

@@ -1,29 +1,47 @@
-<p-card header="Insights" 
+<p-card header="Insights"
         styleClass="chart-card multiPeriodCharts">
-    <p-tabs>
-        <p-tablist>
-            <p-tab value="0">1 Week</p-tab>
-            <p-tab value="1">1 Month</p-tab>
-            <p-tab value="2">YTD</p-tab>
-            <p-tab value="3">1 Year</p-tab>
-        </p-tablist>
-        <p-tabpanels>
-            <p-tabpanel value="0">
-                <p>This is 1 week graph</p>
-                <p-skeleton width="100%" height = "2rem"></p-skeleton>
-            </p-tabpanel>
-            <p-tabpanel value="1">
-                <p>This is 1 month graph</p>
-                <p-skeleton width="100%" height = "2rem"></p-skeleton>
-            </p-tabpanel>
-            <p-tabpanel value="2">
-                <p>This is YTD graph</p>
-                <p-skeleton width="100%" height = "2rem"></p-skeleton>
-            </p-tabpanel>
-            <p-tabpanel value="3">
-                <p>This is 1 year graph</p>
-                <p-skeleton width="100%" height = "2rem"></p-skeleton>
-            </p-tabpanel>
-        </p-tabpanels>
-    </p-tabs>
+    
+    <!-- Show loading skeleton while data loads -->
+    <div *ngIf="loading$ | async" class="loading-container">
+        <p-skeleton height="300px" />
+    </div>
+    
+    <!-- Show content when data is loaded -->
+    <div *ngIf="!(loading$ | async)">
+        <p-tabs>
+            <p-tablist>
+                <p-tab value="0">1 Week</p-tab>
+                <p-tab value="1">1 Month</p-tab>
+                <p-tab value="2">YTD</p-tab>
+                <p-tab value="3">1 Year</p-tab>
+            </p-tablist>
+            <p-tabpanels>
+                <p-tabpanel value="0">
+                    <app-heatmap
+                        [activities]="(activities$ | async) || []"
+                        timeRange="week">
+                    </app-heatmap>
+                </p-tabpanel>
+                <p-tabpanel value="1">
+                    <app-heatmap
+                        [activities]="(activities$ | async) || []"
+                        timeRange="month">
+                    </app-heatmap>
+                </p-tabpanel>
+                <p-tabpanel value="2">
+                    <app-heatmap
+                        [activities]="(activities$ | async) || []"
+                        timeRange="ytd">
+                    </app-heatmap>
+                </p-tabpanel>
+                <p-tabpanel value="3">
+                    <app-heatmap
+                        [activities]="(activities$ | async) || []"
+                        timeRange="year"
+                        [year]="2024">
+                    </app-heatmap>
+                </p-tabpanel>
+            </p-tabpanels>
+        </p-tabs>
+    </div>
 </p-card>

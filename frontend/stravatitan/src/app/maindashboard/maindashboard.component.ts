@@ -16,6 +16,7 @@ import { Myruns } from './subcomponents/myruns/myruns';
 @Component({
     selector: 'app-maindashboard',
     imports: [ButtonModule, DividerModule, CardModule, PanelModule, InputIconModule, Insights, Myruns, SelectButtonModule, CommonModule, FormsModule ],
+    standalone: true,
     templateUrl: './maindashboard.component.html',
     styleUrl: './maindashboard.component.css'
 })

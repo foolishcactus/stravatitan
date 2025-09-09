@@ -4,6 +4,7 @@ import { environment } from '../../environments/environment';
 @Component({
     selector: 'app-login',
     imports: [],
+    standalone: true,
     templateUrl: './login.component.html',
     styleUrl: './login.component.css'
 })

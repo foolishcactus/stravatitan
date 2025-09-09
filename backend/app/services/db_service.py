@@ -31,7 +31,21 @@ def get_access_token(strava_athlete_id:str) -> str | None:
             return user.access_token
     except Exception as e:
         return None
-
+    
+####################################################################################
+def getAllRunsFromDB(strava_athlete_id:str) -> list[StravaActivity]:
+    try:
+        user = User.query.filter_by(strava_athlete_id = strava_athlete_id).first()
+        if user:
+            runs = StravaActivity.query.filter_by(user_id = user.id).all()
+            print(f"Retrieved {len(runs)} runs for user {strava_athlete_id}")
+            print(runs)
+            return runs
+        
+    except Exception as e:
+        print(f"Error retrieving runs from database: {e}")
+        return None
+        
 ####################################################################################
 #
 #   METHODS FOR ADDING TO DATABASE

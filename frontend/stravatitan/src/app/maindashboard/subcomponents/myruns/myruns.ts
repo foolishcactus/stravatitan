@@ -1,8 +1,7 @@
-
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
+import { Observable, startWith } from 'rxjs';
 // PrimeNG Imports
 import { TableModule, TableRowSelectEvent } from 'primeng/table';
 import { InputTextModule } from 'primeng/inputtext';
@@ -13,37 +12,57 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { DatePickerModule } from 'primeng/datepicker';
 import { OverlayModule } from 'primeng/overlay';
-
 import { StravaActivity } from '../../../../interfaces/strava-activity';
-import { mockStravaActivities } from '../../../../interfaces/mock-stravadata';
-
+import { Database } from '../../../../services/database';
 
 @Component({
   selector: 'app-myruns',
   imports: [ButtonModule, InputTextModule, TableModule, DatePickerModule, FormsModule, CommonModule, SliderModule, MultiSelectModule, IconFieldModule, InputIconModule, OverlayModule],
+  standalone: true,
   templateUrl: './myruns.html',
   styleUrl: './myruns.css'
 })
 export class Myruns implements OnInit{
-  stravaActivities: StravaActivity[] = [];
-  selectedActivity!: StravaActivity;
-  loading = true;
-  searchValue = '';
+  // Initialize the observables in the declaration
+  stravaActivities$: Observable<StravaActivity[]>;
+  loading$: Observable<boolean>;
   
+  selectedActivity!: StravaActivity;
+  searchValue = '';
+ 
   // Filter ranges
   distanceRange: number[] = [0, 50000];
   durationRange: number[] = [0, 14400];
   paceRange: number[] = [180, 900];
+
+  // Inject the database service and initialize observables
+  constructor(private databaseService: Database) {
+    // Initialize the observables here with startWith to prevent null
+    this.stravaActivities$ = this.databaseService.activities$.pipe(startWith([]));
+    this.loading$ = this.databaseService.loading$;
+  }
 
   ngOnInit() {
     this.loadActivities();
   }
 
   loadActivities() {
-    setTimeout(() => {
-      this.stravaActivities = mockStravaActivities;
-      this.loading = false;
-    }, 1000);
+    // Check if we already have data, if not load it
+    if (this.databaseService.getCurrentActivities().length === 0) {
+      this.databaseService.getActivities().subscribe({
+        next: (activities: StravaActivity[]) => {
+          console.log(`Loaded ${activities.length} activities`);
+        },
+        error: (error: any) => {
+          console.error('Failed to load activities:', error);
+        }
+      });
+    }
+  }
+
+  // Add refresh method
+  refreshActivities() {
+    this.databaseService.refreshActivities().subscribe();
   }
 
   clear(table: any) {
@@ -60,7 +79,7 @@ export class Myruns implements OnInit{
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     const remainingSeconds = seconds % 60;
-    
+   
     if (hours > 0) {
       return `${hours}h ${minutes}m ${remainingSeconds}s`;
     } else {
@@ -71,7 +90,7 @@ export class Myruns implements OnInit{
   formatDuration(seconds: number): string {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
-    
+   
     if (hours > 0) {
       return `${hours}h ${minutes}m`;
     } else {
@@ -81,14 +100,14 @@ export class Myruns implements OnInit{
 
   calculatePace(distanceMeters: number, elapsedTimeSeconds: number): string {
     if (distanceMeters === 0) return 'N/A';
-    
+   
     const distanceKm = distanceMeters / 1000;
     const timeMinutes = elapsedTimeSeconds / 60;
     const paceMinPerKm = timeMinutes / distanceKm;
-    
+   
     const minutes = Math.floor(paceMinPerKm);
     const seconds = Math.round((paceMinPerKm - minutes) * 60);
-    
+   
     return `${minutes}:${seconds.toString().padStart(2, '0')} /km`;
   }
 
@@ -115,4 +134,3 @@ export class Myruns implements OnInit{
     console.log(this.selectedActivity);
   }
 }
-

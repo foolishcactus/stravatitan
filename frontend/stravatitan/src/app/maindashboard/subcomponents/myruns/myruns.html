@@ -1,6 +1,7 @@
 <p-table
     #dt
-    [value]="stravaActivities"
+    [value]="(stravaActivities$ | async) || []"
+    [loading]="loading$ | async"
     selectionMode ="single"
     [(selection)]="selectedActivity"
     dataKey="id"
@@ -21,6 +22,7 @@
             </p-iconField>
             
             <p-button [outlined]="true" icon="pi pi-filter-slash" label="Clear Filters" (click)="clear(dt)" />
+            <p-button [outlined]="true" icon="pi pi-refresh" label="Refresh" (click)="refreshActivities()" [disabled]="loading$ | async" />
             
         </div>
     </ng-template>
